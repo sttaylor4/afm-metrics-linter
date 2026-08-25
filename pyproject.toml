@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "afm-metrics-linter"
+version = "0.1.0"
+description = "Streaming linter for Adobe Font Metrics (AFM) files"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "sttaylor4" }]
+
+[project.scripts]
+afm-lint = "fontmetricslint.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["fontmetricslint*"]
