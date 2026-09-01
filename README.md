@@ -86,6 +86,15 @@ pip install -e .
 That gives you the `afm-lint` command. Without installing, `python -m
 fontmetricslint.cli` works the same way from a checkout.
 
+## Tests
+
+```
+python -m unittest discover -s tests
+```
+
+No test runner beyond the standard library `unittest` module is required.
+Fixtures live under `tests/fixtures/`.
+
 ## Status
 
 Early. The rule set above covers the mistakes I've actually run into;

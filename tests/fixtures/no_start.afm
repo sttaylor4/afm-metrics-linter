@@ -1,0 +1,7 @@
+FontName MyFont-Regular
+FullName MyFont Regular
+FamilyName MyFont
+StartCharMetrics 1
+C 32 ; WX 278 ; N space ;
+EndCharMetrics
+EndFontMetrics

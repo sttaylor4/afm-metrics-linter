@@ -1,0 +1,7 @@
+StartFontMetrics 4.1
+FontName MyFont-Regular
+StartCharMetrics 3
+C 32 ; WX 278 ; N space ;
+C 65 ; WX -667 ; N A ;
+C 65 ; WX 667 ; N A ;
+EndCharMetrics

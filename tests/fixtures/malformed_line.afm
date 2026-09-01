@@ -1,0 +1,9 @@
+StartFontMetrics 4.1
+FontName MyFont-Regular
+FullName MyFont Regular
+FamilyName MyFont
+StartCharMetrics 2
+C 32 ; WX 278 ; N space ;
+C notanumber ; WX 278 ; N X ;
+EndCharMetrics
+EndFontMetrics

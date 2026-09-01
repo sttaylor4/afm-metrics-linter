@@ -1,0 +1,11 @@
+StartFontMetrics 4.1
+FontName MyFont-Regular
+FullName MyFont Regular
+FamilyName MyFont
+Weight Regular
+StartCharMetrics 3
+C 32 ; WX 278 ; N space ;
+C 65 ; WX 667 ; N A ;
+C 66 ; WX 667 ; N B ;
+EndCharMetrics
+EndFontMetrics
