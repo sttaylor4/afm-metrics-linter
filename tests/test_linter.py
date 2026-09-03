@@ -53,6 +53,22 @@ class BrokenFileTests(unittest.TestCase):
         self.assertTrue(any("FamilyName" in m for m in messages))
 
 
+class KerningPairTests(unittest.TestCase):
+    def setUp(self):
+        self.findings = lint_fixture("kerning.afm")
+        self.by_code = {f.code: f for f in self.findings}
+
+    def test_duplicate_pair_flagged_on_second_occurrence(self):
+        finding = self.by_code["W004"]
+        self.assertEqual(finding.line, 13)
+        self.assertIn("line 12", finding.message)
+
+    def test_undefined_glyph_reference_flagged(self):
+        finding = self.by_code["W005"]
+        self.assertEqual(finding.line, 14)
+        self.assertIn("'W'", finding.message)
+
+
 class MalformedLineTests(unittest.TestCase):
     def test_unparseable_code_flagged(self):
         findings = lint_fixture("malformed_line.afm")
@@ -121,6 +137,43 @@ class InMemoryStreamTests(unittest.TestCase):
         end_findings = [f for f in findings if f.code == "E002"]
         self.assertEqual(len(end_findings), 1)
         self.assertEqual(end_findings[0].line, 1)
+
+    def test_malformed_kerning_pair_flagged(self):
+        lines = [
+            "StartFontMetrics 4.1\n",
+            "FontName F\n",
+            "FullName F\n",
+            "FamilyName F\n",
+            "StartCharMetrics 2\n",
+            "C 65 ; WX 667 ; N A ;\n",
+            "C 86 ; WX 611 ; N V ;\n",
+            "EndCharMetrics\n",
+            "StartKernPairs 1\n",
+            "KPX A notanumber\n",
+            "EndKernPairs\n",
+            "EndFontMetrics\n",
+        ]
+        findings = list(lint_stream(lines))
+        self.assertEqual(codes(findings), ["E005"])
+
+    def test_well_formed_kerning_section_has_no_findings(self):
+        lines = [
+            "StartFontMetrics 4.1\n",
+            "FontName F\n",
+            "FullName F\n",
+            "FamilyName F\n",
+            "StartCharMetrics 2\n",
+            "C 65 ; WX 667 ; N A ;\n",
+            "C 86 ; WX 611 ; N V ;\n",
+            "EndCharMetrics\n",
+            "StartKernData\n",
+            "StartKernPairs 1\n",
+            "KPX A V -80\n",
+            "EndKernPairs\n",
+            "EndKernData\n",
+            "EndFontMetrics\n",
+        ]
+        self.assertEqual(list(lint_stream(lines)), [])
 
 
 if __name__ == "__main__":

@@ -74,6 +74,9 @@ don't fail the run).
 | W001 | warning  | a character code appears on more than one `C` line |
 | W002 | warning  | a glyph name appears on more than one `C` line |
 | W003 | warning  | a recommended header key (`FontName`, `FullName`, `FamilyName`) is missing |
+| E005 | error    | a `KPX` line could not be parsed |
+| W004 | warning  | a `KPX` glyph name pair appears on more than one line |
+| W005 | warning  | a `KPX` line references a glyph name not defined by any `C` line |
 
 ## Installing
 
@@ -98,5 +101,4 @@ Fixtures live under `tests/fixtures/`.
 ## Status
 
 Early. The rule set above covers the mistakes I've actually run into;
-kerning pairs (`KPX`), bounding box sanity, and encoding-scheme checks
-aren't covered yet.
+bounding box sanity and encoding-scheme checks aren't covered yet.

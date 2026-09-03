@@ -65,6 +65,7 @@ def lint_stream(lines: Iterable[str]) -> Iterator[Finding]:
     header_keys_seen: set = set()
     codes_seen: dict = {}
     names_seen: dict = {}
+    kern_pairs_seen: dict = {}
     last_line_no = 0
 
     for line_no, raw_line in enumerate(lines, start=1):
@@ -86,6 +87,14 @@ def lint_stream(lines: Iterable[str]) -> Iterator[Finding]:
             continue
 
         if line.startswith("StartCharMetrics") or line.startswith("EndCharMetrics"):
+            continue
+
+        if (
+            line.startswith("StartKernData")
+            or line.startswith("EndKernData")
+            or line.startswith("StartKernPairs")
+            or line.startswith("EndKernPairs")
+        ):
             continue
 
         key = line.split(None, 1)[0]
@@ -122,6 +131,41 @@ def lint_stream(lines: Iterable[str]) -> Iterator[Finding]:
                     )
                 else:
                     names_seen[name] = line_no
+
+        elif line.startswith("KPX "):
+            # KPX first second amount -- horizontal kerning adjustment for a
+            # glyph name pair. KPY (vertical) pairs aren't part of the spec
+            # most tools emit, so they're left unhandled for now.
+            parts = line.split()
+            amount_ok = len(parts) >= 4
+            if amount_ok:
+                try:
+                    float(parts[3])
+                except ValueError:
+                    amount_ok = False
+            if not amount_ok:
+                yield Finding(line_no, "E005", "error", "malformed kerning pair line")
+                continue
+
+            name1, name2 = parts[1], parts[2]
+            pair = (name1, name2)
+            if pair in kern_pairs_seen:
+                yield Finding(
+                    line_no, "W004", "warning",
+                    f"kerning pair {name1!r}/{name2!r} already used on line {kern_pairs_seen[pair]}",
+                )
+            else:
+                kern_pairs_seen[pair] = line_no
+
+            # This only catches forward references reliably because KPX pairs
+            # come after the char metrics section in every AFM file this
+            # linter has seen; a glyph defined later would be missed.
+            for glyph_name in (name1, name2):
+                if glyph_name not in names_seen:
+                    yield Finding(
+                        line_no, "W005", "warning",
+                        f"kerning pair references undefined glyph name {glyph_name!r}",
+                    )
 
     if not seen_end:
         yield Finding(last_line_no or 1, "E002", "error", "file does not end with EndFontMetrics")

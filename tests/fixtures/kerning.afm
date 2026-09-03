@@ -1,0 +1,17 @@
+StartFontMetrics 4.1
+FontName MyFont-Regular
+FullName MyFont Regular
+FamilyName MyFont
+StartCharMetrics 3
+C 32 ; WX 278 ; N space ;
+C 65 ; WX 667 ; N A ;
+C 86 ; WX 611 ; N V ;
+EndCharMetrics
+StartKernData
+StartKernPairs 3
+KPX A V -80
+KPX A V -80
+KPX A W -70
+EndKernPairs
+EndKernData
+EndFontMetrics
