@@ -49,6 +49,11 @@ def _parse_char_metrics_line(line: str) -> Optional[dict]:
                 return None
         elif key == "N" and len(parts) >= 2:
             fields["name"] = parts[1]
+        elif key == "B" and len(parts) >= 5:
+            try:
+                fields["bbox"] = tuple(float(p) for p in parts[1:5])
+            except ValueError:
+                return None
     return fields
 
 
@@ -110,9 +115,19 @@ def lint_stream(lines: Iterable[str]) -> Iterator[Finding]:
             code = fields.get("code")
             wx = fields.get("wx")
             name = fields.get("name")
+            bbox = fields.get("bbox")
 
             if wx is not None and wx < 0:
                 yield Finding(line_no, "E004", "error", f"negative advance width ({wx})")
+
+            if bbox is not None:
+                llx, lly, urx, ury = bbox
+                if llx > urx or lly > ury:
+                    yield Finding(
+                        line_no, "E006", "error",
+                        f"invalid bounding box ({llx:g} {lly:g} {urx:g} {ury:g}): "
+                        "lower-left corner is past the upper-right corner",
+                    )
 
             if code is not None and code >= 0:
                 if code in codes_seen:

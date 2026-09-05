@@ -77,6 +77,7 @@ don't fail the run).
 | E005 | error    | a `KPX` line could not be parsed |
 | W004 | warning  | a `KPX` glyph name pair appears on more than one line |
 | W005 | warning  | a `KPX` line references a glyph name not defined by any `C` line |
+| E006 | error    | a glyph's bounding box (`B`) has its lower-left corner past its upper-right corner |
 
 ## Installing
 
@@ -101,4 +102,5 @@ Fixtures live under `tests/fixtures/`.
 ## Status
 
 Early. The rule set above covers the mistakes I've actually run into;
-bounding box sanity and encoding-scheme checks aren't covered yet.
+encoding-scheme checks aren't covered yet, and there's no way to silence a
+rule you don't care about or get output in a machine-readable format.

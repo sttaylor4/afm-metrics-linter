@@ -69,6 +69,43 @@ class KerningPairTests(unittest.TestCase):
         self.assertIn("'W'", finding.message)
 
 
+class BoundingBoxTests(unittest.TestCase):
+    def test_inverted_box_flagged(self):
+        findings = lint_fixture("bad_bbox.afm")
+        self.assertEqual(codes(findings), ["E006"])
+        finding = findings[0]
+        self.assertEqual(finding.line, 7)
+        self.assertIn("40", finding.message)
+        self.assertIn("10", finding.message)
+
+    def test_valid_box_is_not_flagged(self):
+        lines = [
+            "StartFontMetrics 4.1\n",
+            "FontName F\n",
+            "FullName F\n",
+            "FamilyName F\n",
+            "StartCharMetrics 1\n",
+            "C 32 ; WX 278 ; N space ; B 0 -10 278 700 ;\n",
+            "EndCharMetrics\n",
+            "EndFontMetrics\n",
+        ]
+        self.assertEqual(list(lint_stream(lines)), [])
+
+    def test_unparseable_box_flagged_as_malformed(self):
+        lines = [
+            "StartFontMetrics 4.1\n",
+            "FontName F\n",
+            "FullName F\n",
+            "FamilyName F\n",
+            "StartCharMetrics 1\n",
+            "C 32 ; WX 278 ; N space ; B 0 0 bad 700 ;\n",
+            "EndCharMetrics\n",
+            "EndFontMetrics\n",
+        ]
+        findings = list(lint_stream(lines))
+        self.assertEqual(codes(findings), ["E003"])
+
+
 class MalformedLineTests(unittest.TestCase):
     def test_unparseable_code_flagged(self):
         findings = lint_fixture("malformed_line.afm")
