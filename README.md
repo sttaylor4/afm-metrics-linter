@@ -34,6 +34,17 @@ python -m fontmetricslint.cli FILE
 
 Pass `-` to read from stdin.
 
+Use `--ignore CODE` to suppress a rule you don't care about. It's repeatable
+and also accepts a comma-separated list:
+
+```
+afm-lint --ignore W001,W002 broken.afm
+afm-lint --ignore W001 --ignore W002 broken.afm
+```
+
+Both suppress `W001` and `W002` findings; an ignored `error`-severity code
+also stops affecting the exit status.
+
 ### Example
 
 Given a file `broken.afm`:
@@ -102,5 +113,5 @@ Fixtures live under `tests/fixtures/`.
 ## Status
 
 Early. The rule set above covers the mistakes I've actually run into;
-encoding-scheme checks aren't covered yet, and there's no way to silence a
-rule you don't care about or get output in a machine-readable format.
+encoding-scheme checks aren't covered yet, and there's no machine-readable
+output format.

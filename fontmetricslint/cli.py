@@ -29,11 +29,21 @@ def main(argv: Optional[List[str]] = None) -> int:
         "paths", nargs="+", metavar="FILE",
         help="AFM file(s) to check, or '-' for stdin",
     )
+    parser.add_argument(
+        "--ignore", action="append", default=[], metavar="CODE",
+        help="rule code to suppress (e.g. W001); repeatable, or comma-separated",
+    )
     args = parser.parse_args(argv)
+
+    ignored_codes = set()
+    for value in args.ignore:
+        ignored_codes.update(code.strip() for code in value.split(",") if code.strip())
 
     had_error = False
     for path in args.paths:
         for finding in _lint_file(path):
+            if finding.code in ignored_codes:
+                continue
             print(f"{path}:{finding.line}: {finding.code} {finding.severity}: {finding.message}")
             if finding.severity == "error":
                 had_error = True
